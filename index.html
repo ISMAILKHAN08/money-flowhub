@@ -1,0 +1,906 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinanceHub | Premium Banking Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="min-h-screen pb-20">
+    <!-- === PREMIUM PRINT STATEMENT TEMPLATE (Hidden in Web) === -->
+    <div id="print-statement-area">
+      <!-- 1. Header -->
+      <div
+        class="flex justify-between items-start mb-8 border-b-2 border-slate-800 pb-6"
+      >
+        <div class="flex items-center gap-3">
+          <div class="bg-slate-900 p-2 rounded text-white">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900">
+              FinanceHub
+            </h1>
+            <p
+              class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold"
+            >
+              Premium Banking
+            </p>
+          </div>
+        </div>
+        <div class="text-right">
+          <h2 class="text-xl font-bold uppercase text-slate-800">
+            Account Statement
+          </h2>
+          <p id="stmt-date-range" class="text-slate-500 text-xs mt-1">
+            Date: ...
+          </p>
+        </div>
+      </div>
+
+      <!-- 2. Account & Summary Info -->
+      <div class="grid grid-cols-2 gap-8 mb-8">
+        <!-- Account Details -->
+        <div>
+          <h3
+            class="text-xs font-bold uppercase text-slate-400 mb-2 tracking-widest"
+          >
+            Account Details
+          </h3>
+          <div class="bg-slate-50 p-4 rounded border border-slate-100">
+            <p class="text-sm font-bold text-slate-800" id="stmt-holder">
+              NAME
+            </p>
+            <p class="text-xs text-slate-500 font-mono mt-1" id="stmt-number">
+              0000 0000 0000 0000
+            </p>
+            <p class="text-xs text-slate-500 mt-1">Savings Account • INR</p>
+          </div>
+        </div>
+
+        <!-- Financial Summary Box -->
+        <div>
+          <h3
+            class="text-xs font-bold uppercase text-slate-400 mb-2 tracking-widest"
+          >
+            Period Summary
+          </h3>
+          <div
+            class="bg-slate-50 rounded border border-slate-100 overflow-hidden"
+          >
+            <div class="flex justify-between p-3 border-b border-slate-200">
+              <span class="text-xs text-slate-600 font-medium"
+                >Opening Balance</span
+              >
+              <span id="stmt-open-bal" class="text-xs font-bold text-slate-800"
+                >₹0.00</span
+              >
+            </div>
+            <div class="grid grid-cols-2">
+              <div class="p-3 border-r border-slate-200 bg-green-50/50">
+                <p class="text-[10px] text-green-600 uppercase font-bold">
+                  Total Credit (Cr)
+                </p>
+                <p
+                  id="stmt-total-cr"
+                  class="text-sm font-bold text-green-700 mt-1"
+                >
+                  ₹0.00
+                </p>
+              </div>
+              <div class="p-3 bg-red-50/50">
+                <p class="text-[10px] text-red-600 uppercase font-bold">
+                  Total Debit (Dr)
+                </p>
+                <p
+                  id="stmt-total-dr"
+                  class="text-sm font-bold text-red-700 mt-1"
+                >
+                  ₹0.00
+                </p>
+              </div>
+            </div>
+            <div
+              class="flex justify-between p-3 bg-slate-100 border-t border-slate-200"
+            >
+              <span class="text-xs text-slate-800 font-bold uppercase"
+                >Closing Balance</span
+              >
+              <span
+                id="stmt-close-bal"
+                class="text-sm font-black text-slate-900"
+                >₹0.00</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Transaction Table -->
+      <div>
+        <h3
+          class="text-xs font-bold uppercase text-slate-400 tracking-widest mb-1"
+        >
+          Transaction History
+        </h3>
+        <table class="statement-table">
+          <thead>
+            <tr>
+              <th width="15%">Date</th>
+              <th width="40%">Description</th>
+              <th width="10%">Ref</th>
+              <th width="12%" class="text-right">Debit (Dr)</th>
+              <th width="12%" class="text-right">Credit (Cr)</th>
+              <th width="11%" class="text-right">Balance</th>
+            </tr>
+          </thead>
+          <tbody id="stmt-table-body">
+            <!-- Rows will be injected here -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer -->
+      <div
+        class="mt-12 pt-4 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-400"
+      >
+        <p>Generated by FinanceHub Banking System</p>
+        <p>This is a computer generated statement.</p>
+      </div>
+    </div>
+
+    <!-- PRE-LOADER (Existing) -->
+    <div id="loader-screen">
+      <div class="loader-logo bg-blue-600 p-4 rounded-2xl shadow-2xl mb-4">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-12 w-12 text-white"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </div>
+      <h1 class="text-white text-2xl font-bold tracking-tight">FinanceHub</h1>
+      <p class="text-slate-400 text-sm mt-2 italic">
+        Securing your financial records...
+      </p>
+      <p
+        class="text-blue-200 text-xs mt-8 font-bold font-mono tracking-widest uppercase opacity-90"
+      >
+        Created by Aether drift
+      </p>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="toast-container"></div>
+
+    <!-- Edit Card Modal -->
+    <div id="card-edit-modal" class="modal-overlay">
+      <div
+        class="bg-white p-8 rounded-3xl w-full max-w-md shadow-2xl mx-4 relative"
+      >
+        <button
+          onclick="toggleCardModal()"
+          class="absolute top-4 right-4 text-slate-400 hover:text-red-500"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+        <h3 class="text-xl font-bold text-slate-800 mb-6">
+          Update Card Details
+        </h3>
+        <form id="card-form" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1"
+              >Account Holder Name</label
+            >
+            <input
+              type="text"
+              id="edit-card-holder"
+              class="w-full p-3 bg-slate-50 border rounded-xl font-bold uppercase"
+              placeholder="YOUR NAME"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1"
+              >Account/Card Number</label
+            >
+            <input
+              type="text"
+              id="edit-card-number"
+              class="w-full p-3 bg-slate-50 border rounded-xl font-mono"
+              placeholder="0000 0000 0000 0000"
+              maxlength="19"
+              inputmode="numeric"
+            />
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label
+                class="block text-xs font-bold text-slate-500 uppercase mb-1"
+                >Expiry (MM/YY)</label
+              >
+              <input
+                type="text"
+                id="edit-card-expiry"
+                class="w-full p-3 bg-slate-50 border rounded-xl font-mono"
+                placeholder="MM/YY"
+                maxlength="5"
+                inputmode="numeric"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-xs font-bold text-slate-500 uppercase mb-1"
+                >CVV</label
+              >
+              <input
+                type="text"
+                id="edit-card-cvv"
+                class="w-full p-3 bg-slate-50 border rounded-xl font-mono"
+                placeholder="123"
+                maxlength="3"
+                inputmode="numeric"
+              />
+            </div>
+          </div>
+          <button
+            type="submit"
+            class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold mt-2 hover:bg-slate-800 transition"
+          >
+            Save Changes
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Header & Navigation -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+      <div
+        class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4"
+      >
+        <div class="flex items-center gap-3">
+          <div class="bg-blue-600 p-2 rounded-lg shadow-sm">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <h1 class="text-2xl font-bold text-slate-800 tracking-tight">
+            FinanceHub
+          </h1>
+        </div>
+
+        <div
+          class="flex bg-slate-100 p-1 rounded-xl w-full md:w-auto overflow-hidden"
+        >
+          <button
+            onclick="switchView('dashboard')"
+            id="nav-dashboard"
+            class="nav-btn active flex-1 md:flex-none px-6 py-2 rounded-lg font-semibold transition-all text-sm"
+          >
+            Dashboard
+          </button>
+          <button
+            onclick="switchView('transactions')"
+            id="nav-transactions"
+            class="nav-btn flex-1 md:flex-none px-6 py-2 rounded-lg font-semibold transition-all text-sm"
+          >
+            Transactions
+          </button>
+          <button
+            onclick="switchView('debts')"
+            id="nav-debts"
+            class="nav-btn flex-1 md:flex-none px-6 py-2 rounded-lg font-semibold transition-all text-sm"
+          >
+            Lending
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 mt-6 main-content">
+      <!-- DASHBOARD SECTION -->
+      <section id="view-dashboard" class="view-section active space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- WRAPPER FOR CARD + BALANCE (NEW) -->
+          <div class="lg:col-span-2 flex flex-col gap-6">
+            <!-- 1. The Debit Card (CLEAN - No Balance) -->
+            <div
+              class="banking-card-premium rounded-[2rem] p-6 sm:p-8 text-white shadow-2xl relative group h-auto"
+            >
+              <!-- Edit Button -->
+              <button
+                onclick="toggleCardModal()"
+                class="absolute top-6 right-6 p-2 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm transition-all z-20"
+                title="Edit Card Details"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 text-gold"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                  />
+                </svg>
+              </button>
+
+              <!-- Top Row: Chip & Wireless -->
+              <div class="flex justify-between items-start mb-8 relative z-10">
+                <div class="flex items-center gap-3">
+                  <!-- Chip Icon -->
+                  <div
+                    class="w-12 h-9 bg-yellow-200 rounded-md border border-yellow-400 opacity-90 relative overflow-hidden shadow-sm"
+                  >
+                    <div
+                      class="absolute inset-0 border border-yellow-600 rounded-md"
+                      style="
+                        clip-path: polygon(
+                          0 30%,
+                          30% 30%,
+                          30% 0,
+                          70% 0,
+                          70% 30%,
+                          100% 30%,
+                          100% 70%,
+                          70% 70%,
+                          70% 100%,
+                          30% 100%,
+                          30% 70%,
+                          0 70%
+                        );
+                      "
+                    ></div>
+                  </div>
+                  <!-- Contactless Icon -->
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-7 w-7 text-white/50"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"
+                    />
+                  </svg>
+                </div>
+                <span class="text-gold font-bold italic tracking-wider text-lg"
+                  >PREMIUM</span
+                >
+              </div>
+
+              <!-- Middle Row: Card Number -->
+              <div class="my-6 relative z-10">
+                <p
+                  class="text-slate-400 text-[10px] uppercase tracking-widest mb-1"
+                >
+                  Account Number
+                </p>
+                <h2
+                  id="card-display-number"
+                  class="text-2xl sm:text-3xl font-mono-card font-medium text-white tracking-widest drop-shadow-md break-all sm:break-normal"
+                >
+                  0000 0000 0000 0000
+                </h2>
+              </div>
+
+              <!-- Bottom Row: Details Only -->
+              <div
+                class="grid grid-cols-2 sm:flex sm:justify-between gap-6 relative z-10 mt-auto"
+              >
+                <div class="col-span-2 sm:col-auto">
+                  <p
+                    class="text-[9px] text-slate-400 font-bold uppercase tracking-widest"
+                  >
+                    Card Holder
+                  </p>
+                  <p
+                    id="card-display-holder"
+                    class="text-sm font-bold uppercase font-mono-card text-white/90 truncate tracking-wide"
+                  >
+                    YOUR NAME
+                  </p>
+                </div>
+                <div>
+                  <p
+                    class="text-[9px] text-slate-400 font-bold uppercase tracking-widest"
+                  >
+                    Expires
+                  </p>
+                  <p
+                    id="card-display-expiry"
+                    class="text-sm font-bold uppercase font-mono-card text-white/90 tracking-wide"
+                  >
+                    MM/YY
+                  </p>
+                </div>
+                <div>
+                  <p
+                    class="text-[9px] text-slate-400 font-bold uppercase tracking-widest"
+                  >
+                    CVV
+                  </p>
+                  <p
+                    id="card-display-cvv"
+                    class="text-sm font-bold uppercase font-mono-card text-white/90 tracking-wide"
+                  >
+                    ***
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. The Balance Section (NEW SEPARATE BOX) -->
+            <div
+              class="glass-card p-6 rounded-2xl flex justify-between items-center shadow-lg border-l-8 border-slate-800 bg-white relative overflow-hidden"
+            >
+              <div class="relative z-10">
+                <p
+                  class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1"
+                >
+                  Total Available Funds
+                </p>
+                <div class="flex items-center gap-2">
+                  <span
+                    class="w-2 h-2 rounded-full bg-green-500 animate-pulse"
+                  ></span>
+                  <p class="text-slate-400 text-[10px] font-medium">
+                    Live Balance
+                  </p>
+                </div>
+              </div>
+              <div class="text-right relative z-10">
+                <h2
+                  id="dash-balance"
+                  class="text-4xl font-bold text-slate-800 tracking-tight"
+                >
+                  ₹0.00
+                </h2>
+              </div>
+              <!-- Background Decor -->
+              <div
+                class="absolute right-0 top-0 h-full w-32 bg-gradient-to-l from-slate-50 to-transparent pointer-events-none"
+              ></div>
+            </div>
+          </div>
+
+          <!-- Stats Summary -->
+          <div class="grid grid-cols-1 gap-4">
+            <!-- Total Credit (Green Theme) -->
+            <div
+              class="glass-card p-5 rounded-2xl flex items-center gap-4 border-l-8 border-green-500 shadow-lg shadow-green-50/50"
+            >
+              <div
+                class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M7 11l5-5m0 0l5 5m-5-5v12"
+                  />
+                </svg>
+              </div>
+              <div>
+                <p
+                  class="text-slate-500 text-xs font-bold uppercase tracking-wider"
+                >
+                  Total Credit
+                </p>
+                <h3 id="dash-income" class="text-xl font-bold text-green-700">
+                  ₹0.00
+                </h3>
+              </div>
+            </div>
+
+            <!-- Total Debit (Red Theme) -->
+            <div
+              class="glass-card p-5 rounded-2xl flex items-center gap-4 border-l-8 border-red-500 shadow-lg shadow-red-50/50"
+            >
+              <div
+                class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 13l-5 5m0 0l-5-5m5 5V6"
+                  />
+                </svg>
+              </div>
+              <div>
+                <p
+                  class="text-slate-500 text-xs font-bold uppercase tracking-wider"
+                >
+                  Total Debit
+                </p>
+                <h3 id="dash-expense" class="text-xl font-bold text-red-700">
+                  ₹0.00
+                </h3>
+              </div>
+            </div>
+
+            <!-- Net Lending (YELLOW/AMBER Theme - Updated) -->
+            <div
+              class="glass-card p-5 rounded-2xl flex items-center gap-4 border-l-8 border-amber-400 shadow-lg shadow-amber-50/50"
+            >
+              <div
+                class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center text-amber-600"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                  />
+                </svg>
+              </div>
+              <div>
+                <p
+                  class="text-slate-500 text-xs font-bold uppercase tracking-wider"
+                >
+                  Net Lending
+                </p>
+                <h3 id="dash-debt" class="text-xl font-bold text-amber-700">
+                  ₹0.00
+                </h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Analytics & Activity -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- SHADOW ADDED HERE (shadow-md) -->
+          <div
+            class="lg:col-span-2 glass-card rounded-2xl overflow-hidden shadow-md"
+          >
+            <div
+              class="p-6 border-b border-slate-100 flex justify-between items-center"
+            >
+              <h3 class="font-bold text-slate-800">Transaction Feed</h3>
+              <button
+                onclick="switchView('transactions')"
+                class="text-blue-600 text-sm font-bold hover:underline"
+              >
+                View All
+              </button>
+            </div>
+            <div id="recent-list" class="divide-y divide-slate-50"></div>
+          </div>
+
+          <!-- Spending Analytics -->
+          <div class="glass-card p-6 rounded-2xl">
+            <h3 class="font-bold text-slate-800 mb-6">Spending Analysis</h3>
+            <div id="category-analysis" class="space-y-5">
+              <p class="text-center text-slate-400 text-sm py-10">
+                No data available.
+              </p>
+            </div>
+            <div
+              class="mt-8 pt-6 border-t border-slate-100 flex flex-col gap-3 no-print"
+            >
+              <button
+                onclick="downloadPDF()"
+                class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-900 transition shadow-sm"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                  />
+                </svg>
+                Print Statement
+              </button>
+              <button
+                onclick="resetAllData()"
+                class="w-full text-red-500 py-2 text-sm font-semibold hover:bg-red-50 rounded-lg transition"
+              >
+                Clear All Ledger
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TRANSACTIONS SECTION -->
+      <section id="view-transactions" class="view-section space-y-6">
+        <!-- SHADOW, BORDER, COLOR ADDED HERE (shadow-xl, border-indigo, bg-indigo) -->
+        <div
+          class="glass-card p-8 rounded-3xl no-print shadow-xl border-l-8 border-indigo-600 bg-indigo-50/30"
+        >
+          <h2
+            id="tx-form-title"
+            class="text-2xl font-bold text-slate-800 mb-6 tracking-tight"
+          >
+            Financial Entry
+          </h2>
+          <form id="tx-form" class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <input type="hidden" id="edit-id" />
+            <div class="md:col-span-4">
+              <label
+                class="block text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest"
+                >Detail / Remarks</label
+              >
+              <input
+                type="text"
+                id="tx-desc"
+                placeholder="Salary, Shopping..."
+                class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all"
+              />
+            </div>
+            <div class="md:col-span-2">
+              <label
+                class="block text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest"
+                >Amount (₹)</label
+              >
+              <input
+                type="number"
+                id="tx-amount"
+                placeholder="0.00"
+                class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none"
+              />
+            </div>
+            <div class="md:col-span-3">
+              <label
+                class="block text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest"
+                >Category</label
+              >
+              <select
+                id="tx-category"
+                class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none cursor-pointer"
+              >
+                <option value="General">General</option>
+                <option value="Food">Food & Dining</option>
+                <option value="Salary">Salary/Income</option>
+                <option value="Rent">Rent & Bills</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Travel">Travel</option>
+                <option value="Investment">Investment</option>
+              </select>
+            </div>
+            <div class="md:col-span-3">
+              <label
+                class="block text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest"
+                >Transaction Mode</label
+              >
+              <select
+                id="tx-type"
+                class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none font-bold"
+              >
+                <option value="income">Credit (+)</option>
+                <option value="expense" selected>Debit (-)</option>
+              </select>
+            </div>
+            <div class="md:col-span-12 flex justify-end gap-3 mt-2">
+              <button
+                type="button"
+                id="cancel-edit"
+                onclick="resetTxForm()"
+                class="hidden bg-slate-100 text-slate-600 px-8 py-4 rounded-2xl font-bold hover:bg-slate-200"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                id="submit-btn"
+                class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-blue-700 shadow-lg transition-all"
+              >
+                Record Transaction
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- SHADOW ADDED HERE (shadow-lg) -->
+        <div class="glass-card rounded-3xl overflow-hidden shadow-lg">
+          <div
+            class="p-6 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row justify-between items-center gap-4"
+          >
+            <div class="flex items-center gap-4">
+              <h3 class="text-lg font-bold text-slate-800">Account Ledger</h3>
+              <span
+                id="tx-count"
+                class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest"
+                >0 Items</span
+              >
+            </div>
+            <div class="flex flex-wrap gap-2 no-print">
+              <input
+                type="text"
+                id="tx-search"
+                oninput="updateUI()"
+                placeholder="Search Ledger..."
+                class="text-sm border border-slate-200 rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-400 w-48"
+              />
+              <select
+                id="tx-filter"
+                onchange="updateUI()"
+                class="text-sm bg-white border border-slate-200 rounded-xl px-3 py-2 outline-none font-semibold"
+              >
+                <option value="all">Full History</option>
+                <option value="7days">Weekly</option>
+                <option value="30days">Monthly</option>
+              </select>
+            </div>
+          </div>
+          <div
+            id="tx-list"
+            class="divide-y divide-slate-50 min-h-[300px]"
+          ></div>
+        </div>
+      </section>
+
+      <!-- DEBTS SECTION -->
+      <section id="view-debts" class="view-section space-y-6">
+        <div
+          class="glass-card p-8 rounded-3xl border-l-8 border-orange-500 no-print"
+        >
+          <h2 class="text-2xl font-bold text-slate-800 mb-6">
+            Lending & Borrowing Tracker
+          </h2>
+          <form id="debt-form" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="md:col-span-2">
+              <label
+                class="block text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest"
+                >Party Name / Details</label
+              >
+              <input
+                type="text"
+                id="debt-desc"
+                placeholder="e.g., Loan to Manish"
+                class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest"
+                >Amount (₹)</label
+              >
+              <input
+                type="number"
+                id="debt-amount"
+                placeholder="0.00"
+                class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest"
+                >Debt Status</label
+              >
+              <select
+                id="debt-type"
+                class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none font-bold"
+              >
+                <option value="lent">I Lent (Money Given)</option>
+                <option value="borrowed">I Borrowed (Money Taken)</option>
+              </select>
+            </div>
+            <div class="md:col-span-4 flex justify-end">
+              <button
+                type="submit"
+                class="bg-orange-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-orange-700 shadow-lg transition"
+              >
+                Save Record
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="glass-card rounded-3xl overflow-hidden">
+          <div
+            class="p-6 bg-orange-50/30 border-b border-orange-100 flex justify-between items-center"
+          >
+            <h3 class="font-bold text-slate-700 tracking-tight">
+              Outstanding Balances
+            </h3>
+            <input
+              type="text"
+              id="debt-search"
+              oninput="updateUI()"
+              placeholder="Filter Party..."
+              class="text-sm border border-slate-200 rounded-xl p-2.5 outline-none w-40 no-print"
+            />
+          </div>
+          <div
+            id="debt-list"
+            class="divide-y divide-slate-50 min-h-[300px]"
+          ></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- App Footer -->
+    <footer class="max-w-6xl mx-auto px-4 py-8 text-center no-print">
+      <p class="text-slate-400 text-xs font-medium">
+        © 2026 FinanceHub. Created by
+        <span class="text-slate-600 font-bold">Aether drift</span>
+      </p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
